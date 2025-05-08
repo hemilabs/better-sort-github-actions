@@ -1,0 +1,51 @@
+{
+  "name": "better-sort-github-actions",
+  "version": "1.0.0",
+  "description": "Sort GitHub Actions YAML as in the docs",
+  "keywords": [
+    "actions",
+    "composite",
+    "docs",
+    "github",
+    "properties",
+    "sort",
+    "workflows",
+    "yaml"
+  ],
+  "bugs": "https://github.com/hemilabs/better-sort-github-actions/issues",
+  "license": "MIT",
+  "author": "Gabriel Montes <gabriel@hemi.xyz>",
+  "files": [
+    "bin",
+    "src"
+  ],
+  "main": "src/index.js",
+  "bin": "bin/cli.js",
+  "repository": "hemilabs/better-sort-github-actions",
+  "scripts": {
+    "ci-checks": "npm run lint && npm run format:check && npm run deps:check",
+    "deps:check": "knip",
+    "format:check": "prettier --check .",
+    "lint": "eslint --max-warnings 0 .",
+    "prepare": "husky",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "eslint": "^8.57.1",
+    "yaml": "^2.7.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@types/node": "^22.15.3",
+    "better-sort-package-json": "^1.1.1",
+    "commitlint-config-bloq": "^1.1.0",
+    "eslint-config-bloq": "^4.5.0",
+    "husky": "^9.1.7",
+    "knip": "^5.54.1",
+    "lint-staged": "^15.5.2",
+    "prettier": "^3.5.3"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

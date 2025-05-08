@@ -1,0 +1,105 @@
+# Test file for a workflow
+
+name: Test workflow
+
+run-name: Something like this
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      docker:
+        description: "Do some Docker stuff"
+        default: false
+        type: boolean
+      release:
+        description: "Create a release"
+        default: false
+        type: boolean
+      version:
+        description: "Version"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  pull-requests: write
+
+env:
+  GITHUB_REPOSITORY: "${{ github.repository }}"
+  GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
+concurrency:
+  group: "release-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    name: "Prepare"
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: "ubuntu-latest"
+    outputs:
+      tag: "${{ steps.version.outputs.tag }}"
+      version: "${{ steps.version.outputs.version }}"
+      version_type: "${{ steps.version.outputs.type }}"
+    steps:
+      - id: version
+        name: "Determine version type"
+        run: echo "Preparing..."
+        env:
+          RAW_VERSION: "${{ inputs.version || github.ref_name }}"
+  docker:
+    name: "Docker"
+    permissions:
+      contents: read
+      packages: write
+    needs:
+      - "prepare"
+    if: github.event_name == 'push' || inputs.docker
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - name: "Setup Docker"
+        uses: docker/setup-action@v3
+      - if: github.event_name == 'push'
+        name: "Login"
+        uses: docker/login-action@v3
+        with:
+          password: SuperSecret
+          username: Docker
+      - name: "Build and push"
+        uses: docker/build-push-action@v5
+        with:
+          context: "${{ github.workspace }}"
+          file: "${{ github.workspace }}/Dockerfile"
+          platforms: "amd64"
+  release:
+    name: "Release"
+    permissions:
+      contents: write
+    needs:
+      - "prepare"
+      - "docker"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+      - if: github.event_name == 'push' || inputs.release
+        name: "Create GitHub release"
+        run: |
+          gh release create "$TAG"
+        env:
+          GH_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+          PRERELEASE: "${{ needs.prepare.outputs.version_type == 'unstable' }}"
+          TAG: "${{ github.ref_name || needs.prepare.outputs.tag }}"

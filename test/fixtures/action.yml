@@ -1,0 +1,52 @@
+# Test file for composite actions
+
+name: Composite Test Action
+
+description: Test action
+author: Tester
+
+runs:
+  steps:
+    - uses: actions/setup-node@v3
+      with:
+        node-version: ${{ inputs.node_version }}
+        cache-dependency-path: "**/package-lock.json"
+        cache: npm
+        node-version-file: .nvmrc
+      env:
+        NODE_ENV: ${{ inputs.node_env }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - shell: bash
+      run: npm ci
+      id: install
+      if: ${{ ! startsWith(github.ref, 'refs/tags/') }}
+    - shell: bash
+      name: Build and test
+      run: |
+        npm run build
+        npm run test
+  using: composite
+
+outputs:
+  c-output:
+    description: This is the third output
+    value: ${{ steps.third-step.outputs.third-output }}
+  a-output:
+    value: ${{ steps.first-step.outputs.first-output }}
+    description: This has to go first!
+  b-output:
+    description: This one has to go second!
+    value: ${{ steps.second-step.outputs.second-output }}
+
+branding:
+  icon: "terminal"
+  color: "blue"
+
+inputs:
+  second-input:
+    required: true
+    description: This one should go second
+  first-input:
+    description: Something that goes first
+    default: ""
+    required: false

@@ -1,0 +1,3 @@
+{
+  "ignoreDependencies": ["commitlint-config-bloq", "eslint-config-prettier"]
+}
