@@ -1,0 +1,17 @@
+{
+  "extends": ["bloq", "bloq/node", "prettier"],
+  "overrides": [
+    {
+      "files": ["bin/*"],
+      "rules": {
+        "no-console": "off",
+        "no-process-exit": "off"
+      }
+    },
+    {
+      "extends": ["bloq/mocha", "prettier"],
+      "files": ["*.test.js"]
+    }
+  ],
+  "root": true
+}
