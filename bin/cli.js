@@ -12,8 +12,6 @@ if (!files.length) {
   process.exit(1);
 }
 
-// TODO check how globs are handled
-
 try {
   files.forEach(function (file) {
     writeFileSync(file, sort(readFileSync(file, "utf8")));
