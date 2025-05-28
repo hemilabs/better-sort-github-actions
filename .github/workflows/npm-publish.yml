@@ -10,6 +10,6 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    uses: bloq/actions/.github/workflows/npm-publish.yml@v1
+    uses: hemilabs/actions/.github/workflows/npm-publish.yml@63592c8da7b84d0953f8ed3b7ca89d43142a8605 # PR#22
     secrets:
       NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
