@@ -1,4 +1,4 @@
-# better-sort-github-actions-files
+# better-sort-github-actions
 
 Sorts GitHub Actions workflow or composite action files following these rules:
 
